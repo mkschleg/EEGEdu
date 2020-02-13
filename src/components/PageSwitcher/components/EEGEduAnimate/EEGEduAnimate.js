@@ -25,6 +25,8 @@ import sketchCube from './sketchCube'
 import sketchFlock from './sketchFlock'
 import sketchDraw from './sketchDraw'
 import sketchFlock3D from './sketchFlock3D'
+import sketchFlashFast from './sketchFlashFast'
+import sketchFlashSlow from './sketchFlashSlow'
 
 import P5Wrapper from 'react-p5-wrapper';
 
@@ -109,6 +111,8 @@ export function renderModule(channels) {
     const flock = 'flock';
     const draw = 'draw';
     const flock3d = 'flock3d';
+    const flashFast = 'flashFast';
+    const flashSlow = 'flashSlow';
 
     const chartTypes = [
       { label: bands, value: bands },
@@ -116,7 +120,9 @@ export function renderModule(channels) {
       { label: cube, value: cube },
       { label: flock, value: flock },
       { label: draw, value: draw },
-      { label: flock3d, value: flock3d }
+      { label: flock3d, value: flock3d },
+      { label: flashFast, value: flashFast },
+      { label: flashSlow, value: flashSlow }
     ];
 
     // for picking a new animation
@@ -158,6 +164,12 @@ export function renderModule(channels) {
           break
         case flock3d:
           thisSketch = sketchFlock3D;
+          break
+        case flashFast:
+          thisSketch = sketchFlashFast;
+          break
+        case flashSlow:
+          thisSketch = sketchFlashSlow;
           break
         default: console.log("Error on switch to " + selectedAnimation)
       }
