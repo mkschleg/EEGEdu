@@ -9,7 +9,7 @@ import { emptyAuxChannelData } from "./components/chartOptions";
 
 import * as funIntro from "./components/EEGEduIntro/EEGEduIntro"
 import * as funHeartRaw from "./components/EEGEduHeartRaw/EEGEduHeartRaw"
-import * as funHeartSpectra from "./components/EEGEduHeartSpectra/EEGEduHeartSpectra"
+import * as funHeartSpectra from "./components/EEGEduHeartSpectra/EEGEduHeartSpectra";
 import * as funRaw from "./components/EEGEduRaw/EEGEduRaw";
 import * as funSpectra from "./components/EEGEduSpectra/EEGEduSpectra";
 import * as funBands from "./components/EEGEduBands/EEGEduBands";
@@ -19,6 +19,7 @@ import * as funAlpha from "./components/EEGEduAlpha/EEGEduAlpha";
 import * as funSsvep from "./components/EEGEduSsvep/EEGEduSsvep";
 import * as funEvoked from "./components/EEGEduEvoked/EEGEduEvoked";
 import * as funPredict from "./components/EEGEduPredict/EEGEduPredict";
+import * as funData from "./components/EEGEduData/EEGEduData";
 
 const intro = translations.types.intro;
 const heartRaw = translations.types.heartRaw;
@@ -32,6 +33,7 @@ const alpha = translations.types.alpha;
 const ssvep = translations.types.ssvep;
 const evoked = translations.types.evoked;
 const predict = translations.types.predict;
+const data = translations.types.data_col;
 
 export function PageSwitcher() {
 
@@ -59,6 +61,7 @@ export function PageSwitcher() {
   const [ssvepData, setSsvepData] = useState(emptyAuxChannelData);
   const [evokedData, setEvokedData] = useState(emptyAuxChannelData);
   const [predictData, setPredictData] = useState(emptyAuxChannelData);
+  const [dataData, setDataData] = useState(emptyAuxChannelData);
 
   // pipe settings
   const [introSettings] = useState(funIntro.getSettings);
@@ -73,6 +76,7 @@ export function PageSwitcher() {
   const [ssvepSettings, setSsvepSettings] = useState(funSsvep.getSettings);
   const [evokedSettings, setEvokedSettings] = useState(funEvoked.getSettings);
   const [predictSettings, setPredictSettings] = useState(funPredict.getSettings);
+  const [dataSettings, setDataSettings] = useState(funData.getSettings);
 
   // connection status
   const [status, setStatus] = useState(generalTranslations.connect);
@@ -96,6 +100,7 @@ export function PageSwitcher() {
     if (window.subscriptionSsvep) window.subscriptionSsvep.unsubscribe();
     if (window.subscriptionEvoked) window.subscriptionEvoked.unsubscribe();
     if (window.subscriptionPredict) window.subscriptionPredict.unsubscribe();
+    if (window.subscriptionData) window.subscriptionData.unsubscribe();
 
     subscriptionSetup(value);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -146,6 +151,9 @@ export function PageSwitcher() {
     case predict:
       showAux = false;
       break
+    case data:
+      showAux = true;
+      break
     default:
       console.log("Error on showAux");
   }
@@ -163,7 +171,8 @@ export function PageSwitcher() {
     { label: alpha, value: alpha },
     { label: ssvep, value: ssvep },
     { label: evoked, value: evoked },
-    { label: predict, value: predict }
+    { label: predict, value: predict },
+    { label: data, value: data }
 
   ];
 
@@ -180,6 +189,7 @@ export function PageSwitcher() {
     funSsvep.buildPipe(ssvepSettings);
     funEvoked.buildPipe(evokedSettings);
     funPredict.buildPipe(predictSettings);
+    funData.buildPipe(dataSettings);
   }
 
   function subscriptionSetup(value) {
@@ -219,6 +229,9 @@ export function PageSwitcher() {
         break;
       case predict:
         funPredict.setup(setPredictData, predictSettings);
+        break;
+      case data:
+        funData.setup(setDataData, dataSettings);
         break;
       default:
         console.log(
@@ -306,6 +319,10 @@ export function PageSwitcher() {
         return (
           funPredict.renderSliders(setPredictData, setPredictSettings, status, predictSettings)
         );
+      case data: 
+        return (
+          funData.renderSliders(setDataData, setDataSettings, status, dataSettings)
+        );
       default: console.log('Error rendering settings display');
     }
   }
@@ -336,6 +353,8 @@ export function PageSwitcher() {
         return <funEvoked.renderModule data={evokedData} />;
       case predict:
         return <funPredict.renderModule data={predictData} />;
+      case data:
+        return <funData.renderModule data={dataData} />;
       default:
         console.log("Error on renderCharts switch.");
     }
@@ -384,6 +403,10 @@ export function PageSwitcher() {
       case predict:
         return (
           funPredict.renderRecord(recordPopChange, status)
+        )
+      case data:
+        return (
+	  funData.renderRecord(recordPopChange, recordPop, status, dataSettings, recordTwoPopChange, recordTwoPop, setDataSettings)
         )
       default:   
         console.log("Error on renderRecord.");

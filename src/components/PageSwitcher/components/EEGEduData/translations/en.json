@@ -1,0 +1,9 @@
+{
+  "title": "Data Collection Module",
+  "description": [
+    "This module will be focused around collecting data! ",
+    "It has been modified from the EEGAlpha module."
+  ],
+  "xlabel": "Frequency (Hz)",
+  "ylabel": "Power (\u03BCV\u00B2)"
+}
