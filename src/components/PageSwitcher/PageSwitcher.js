@@ -82,7 +82,7 @@ export function PageSwitcher() {
   const [status, setStatus] = useState(generalTranslations.connect);
 
   // for picking a new module
-  const [selected, setSelected] = useState(intro);
+  const [selected, setSelected] = useState(animate);
   const handleSelectChange = useCallback(value => {
     setSelected(value);
 
@@ -173,7 +173,6 @@ export function PageSwitcher() {
     { label: evoked, value: evoked },
     { label: predict, value: predict },
     { label: data, value: data }
-
   ];
 
   function buildPipes(value) {
@@ -342,7 +341,7 @@ export function PageSwitcher() {
       case bands:
         return <funBands.renderModule data={bandsData} />;
       case animate:
-        return <funAnimate.renderModule data={animateData} />;
+        return <funAnimate.renderModule data={animateData} settings={animateSettings} />;
       case spectro:
         return <funSpectro.renderModule data={spectroData} />;
       case alpha: 

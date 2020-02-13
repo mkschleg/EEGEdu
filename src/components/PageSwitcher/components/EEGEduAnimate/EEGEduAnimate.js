@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { catchError, multicast } from "rxjs/operators";
 
-import { Card, Stack, TextContainer, RangeSlider, Select} from "@shopify/polaris";
+import { Card, Stack, TextContainer, RangeSlider, Select, TextField} from "@shopify/polaris";
 import { Subject } from "rxjs";
 
 import { zipSamples } from "muse-js";
@@ -27,6 +27,7 @@ import sketchDraw from './sketchDraw'
 import sketchFlock3D from './sketchFlock3D'
 import sketchFlashFast from './sketchFlashFast'
 import sketchFlashSlow from './sketchFlashSlow'
+import sketchFlash from './sketchFlash'
 
 import P5Wrapper from 'react-p5-wrapper';
 
@@ -38,6 +39,7 @@ export function getSettings () {
     bins: 256,
     duration: 128,
     srate: 256,
+    freq: 4,
     name: 'Animate'
   }
 };
@@ -84,7 +86,7 @@ export function setup(setData, Settings) {
               data.beta[index],
               data.gamma[index]
             ];
-            channel.xLabels = bandLabels;
+          channel.xLabels = bandLabels;
         });
 
         return {
@@ -113,6 +115,7 @@ export function renderModule(channels) {
     const flock3d = 'flock3d';
     const flashFast = 'flashFast';
     const flashSlow = 'flashSlow';
+    const flash = 'flash';
 
     const chartTypes = [
       { label: bands, value: bands },
@@ -122,11 +125,12 @@ export function renderModule(channels) {
       { label: draw, value: draw },
       { label: flock3d, value: flock3d },
       { label: flashFast, value: flashFast },
-      { label: flashSlow, value: flashSlow }
+      { label: flashSlow, value: flashSlow },
+      { label: flash, value: flash }
     ];
 
     // for picking a new animation
-    const [selectedAnimation, setSelectedAnimation] = useState(bands);
+    const [selectedAnimation, setSelectedAnimation] = useState(flash);
     const handleSelectChangeAnimation = useCallback(value => {
       setSelectedAnimation(value);
       console.log("Switching to: " + value);
@@ -141,6 +145,8 @@ export function renderModule(channels) {
           window.alpha = channel.datasets[0].data[2];
           window.beta  = channel.datasets[0].data[3];
           window.gamma = channel.datasets[0].data[4];
+	  // console.log(channel.datasets[0])
+	  // window.freq  = channel.datasets[0].settings.freq;
         }
       }   
 
@@ -171,6 +177,9 @@ export function renderModule(channels) {
         case flashSlow:
           thisSketch = sketchFlashSlow;
           break
+        case flash:
+          thisSketch = sketchFlash;
+          break
         default: console.log("Error on switch to " + selectedAnimation)
       }
 
@@ -195,6 +204,8 @@ export function renderModule(channels) {
                 alpha={window.alpha}
                 beta={window.beta}
                 gamma={window.gamma}
+	        freq={window.freq}
+	        // freq={channel.datasets[0].settings.freq}
               />          
             </Card.Section>
           </React.Fragment>
@@ -249,6 +260,11 @@ export function renderSliders(setData, setSettings, status, Settings) {
     resetPipeSetup();
   }
 
+  function handleFrequencyRangeTextChange(value) {
+    setSettings(prevState => ({...prevState, freq: value}));
+    resetPipeSetup();
+  }
+
   return (
     <Card title={Settings.name + ' Settings'} sectioned>
       <RangeSlider 
@@ -277,8 +293,15 @@ export function renderSliders(setData, setSettings, status, Settings) {
         min={Settings.cutOffLow + .5} step={.5} max={Settings.srate/2} 
         label={'Cutoff Frequency High: ' + Settings.cutOffHigh + ' Hz'} 
         value={Settings.cutOffHigh} 
-        onChange={handleCutoffHighRangeSliderChange} 
+        onChange={handleCutoffHighRangeSliderChange}
       />
+      <TextField
+         type="number"
+         min={1}
+         label={'Frequancy: '}
+         value={Settings.freq}
+         onChange={handleFrequencyRangeTextChange}
+       />
     </Card>
   )
 }
